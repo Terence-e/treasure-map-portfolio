@@ -8,6 +8,7 @@ type Props = {
   daylight: boolean
   onSelect: (id: string) => void
   onToggleTheme: () => void
+  onOpenProjects: () => void
 }
 
 /**
@@ -16,7 +17,7 @@ type Props = {
  * than inside it — and the district chips give a keyboard route to every
  * place on the map, which a 3D canvas cannot provide on its own.
  */
-export function Header({ activeId, panelOpen, daylight, onSelect, onToggleTheme }: Props) {
+export function Header({ activeId, panelOpen, daylight, onSelect, onToggleTheme, onOpenProjects }: Props) {
   return (
     <header
       className={[
@@ -36,18 +37,47 @@ export function Header({ activeId, panelOpen, daylight, onSelect, onToggleTheme 
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <p className="hidden text-right text-sm text-[color:var(--color-hud)] md:block">
               {profile.role}
               <span className="block font-[family-name:var(--font-mono)] text-[11px] text-[color:var(--on-surface-soft)]">
                 {profile.location}
               </span>
             </p>
+
+            <button
+              type="button"
+              onClick={onOpenProjects}
+              className="stencil flex h-11 items-center gap-2 border border-[color:var(--color-amber)]/50 bg-[color:var(--color-amber)]/10 px-3 text-[11px] text-[color:var(--color-amber)] transition-colors duration-200 hover:border-[color:var(--color-amber)] hover:bg-[color:var(--color-amber)]/18"
+            >
+              <ListIcon />
+              <span>View projects</span>
+            </button>
+
+            <a
+              href={`${import.meta.env.BASE_URL}Terence_Eloundou_Gaston_CV.pdf`}
+              download
+              className="stencil flex h-11 items-center gap-2 border border-[color:var(--color-hud)]/40 px-3 text-[11px] text-[color:var(--on-surface-soft)] transition-colors duration-200 hover:border-[color:var(--color-hud)] hover:text-[color:var(--color-hud)]"
+            >
+              <DownloadIcon />
+              <span className="hidden sm:inline">Download CV</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => onSelect('comms-tower')}
+              aria-current={activeId === 'comms-tower' ? 'true' : undefined}
+              className="stencil flex h-11 items-center gap-2 border border-[color:var(--color-hud)]/40 px-3 text-[11px] text-[color:var(--on-surface-soft)] transition-colors duration-200 hover:border-[color:var(--color-hud)] hover:text-[color:var(--color-hud)]"
+            >
+              <MailIcon />
+              <span className="hidden sm:inline">Contact</span>
+            </button>
+
             <button
               type="button"
               onClick={onToggleTheme}
               aria-pressed={daylight}
-              className="stencil flex h-11 items-center gap-2 border border-[color:var(--color-hud)]/40 px-3 text-[10px] text-[color:var(--on-surface-soft)] transition-colors duration-200 hover:border-[color:var(--color-hud)] hover:text-[color:var(--color-hud)]"
+              className="stencil flex h-11 items-center gap-2 border border-[color:var(--color-hud)]/40 px-3 text-[11px] text-[color:var(--on-surface-soft)] transition-colors duration-200 hover:border-[color:var(--color-hud)] hover:text-[color:var(--color-hud)]"
             >
               <SunMoon daylight={daylight} />
               <span className="hidden sm:inline">{daylight ? 'High ambient' : 'Night optics'}</span>
@@ -65,8 +95,9 @@ export function Header({ activeId, panelOpen, daylight, onSelect, onToggleTheme 
                     type="button"
                     onClick={() => onSelect(d.id)}
                     aria-current={on ? 'true' : undefined}
+                    title={d.subtitle}
                     className={[
-                      'group stencil flex h-11 shrink-0 items-center gap-2 whitespace-nowrap border-l-2 px-3 text-[10px] transition-all duration-200',
+                      'group stencil flex h-11 shrink-0 items-center gap-2 whitespace-nowrap border-l-2 px-3 text-left transition-all duration-200',
                       on
                         ? 'border-[color:var(--color-crimson)] bg-[color:var(--color-crimson)]/12 text-[color:var(--on-surface)]'
                         : 'border-[color:var(--color-hud-dim)]/40 text-[color:var(--on-surface-soft)] hover:border-[color:var(--color-hud)] hover:text-[color:var(--on-surface)]',
@@ -78,7 +109,12 @@ export function Header({ activeId, panelOpen, daylight, onSelect, onToggleTheme 
                     >
                       <DistrictIcon id={d.id} />
                     </span>
-                    {d.name}
+                    <span className="leading-tight">
+                      <span className="block text-[11px]">{d.name}</span>
+                      <span className="block text-[9px] uppercase tracking-[0.08em] text-[color:var(--on-surface-soft)]">
+                        {d.subtitle}
+                      </span>
+                    </span>
                   </button>
                 </li>
               )
@@ -87,6 +123,61 @@ export function Header({ activeId, panelOpen, daylight, onSelect, onToggleTheme 
         </nav>
       </div>
     </header>
+  )
+}
+
+function ListIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </svg>
+  )
+}
+
+function DownloadIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 3v12m0 0-4-4m4 4 4-4M4 19.5V21h16v-1.5" />
+    </svg>
+  )
+}
+
+function MailIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m4 7 8 6 8-6" />
+    </svg>
   )
 }
 

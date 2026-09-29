@@ -4,6 +4,7 @@ import { GlassDefs } from './components/Glass'
 import { Header } from './components/Header'
 import { HoverCard } from './components/HoverCard'
 import { Panel } from './components/Panel'
+import { ProjectMenu } from './components/ProjectMenu'
 import { useReducedMotion } from './hooks'
 import { districts, districtById } from './data/world'
 import { profile, tally } from './data/content'
@@ -13,6 +14,8 @@ export default function App() {
   const [daylight, setDaylight] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [projectsOpen, setProjectsOpen] = useState(false)
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null)
 
   useEffect(() => {
     document.documentElement.classList.toggle('daylight', daylight)
@@ -42,6 +45,12 @@ export default function App() {
     window.history.replaceState(null, '', window.location.pathname)
   }
 
+  const openProject = (districtId: string, projectId: string) => {
+    select(districtId)
+    setScrollTarget(projectId)
+    setProjectsOpen(false)
+  }
+
   return (
     <div className="scanlines fixed inset-0 overflow-hidden">
       <GlassDefs />
@@ -68,10 +77,21 @@ export default function App() {
         daylight={daylight}
         onSelect={select}
         onToggleTheme={() => setDaylight((d) => !d)}
+        onOpenProjects={() => setProjectsOpen(true)}
       />
 
       <HoverCard id={activeId ? null : hoveredId} />
-      <Panel id={activeId} onClose={deselect} />
+      <Panel
+        id={activeId}
+        onClose={deselect}
+        scrollToProjectId={scrollTarget}
+        onScrolledToProject={() => setScrollTarget(null)}
+      />
+      <ProjectMenu
+        open={projectsOpen}
+        onClose={() => setProjectsOpen(false)}
+        onOpenProject={openProject}
+      />
 
       {/* Controls hint and the headline numbers, out of the way at the
           bottom-left. Hidden once a panel is open. */}
@@ -84,10 +104,10 @@ export default function App() {
             <dl className="mt-3 grid grid-cols-4 gap-px bg-[color:var(--color-hud)]/15">
               {tally.map((t) => (
                 <div key={t.label} className="bg-[color:var(--surface)]/80 px-2 py-2">
-                  <dt className="stencil tnum text-[13px] text-[color:var(--color-amber)]">
+                  <dt className="stencil tnum text-[15px] text-[color:var(--color-amber)]">
                     {t.value}
                   </dt>
-                  <dd className="font-[family-name:var(--font-mono)] text-[8px] uppercase leading-tight tracking-[0.1em] text-[color:var(--on-surface-soft)]">
+                  <dd className="break-words font-[family-name:var(--font-mono)] text-[9px] uppercase leading-tight tracking-[0.1em] text-[color:var(--on-surface-soft)]">
                     {t.label}
                   </dd>
                 </div>

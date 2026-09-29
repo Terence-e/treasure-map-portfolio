@@ -31,7 +31,17 @@ import { DistrictIcon } from './DistrictIcon'
  * nothing, closes on Escape and on the backdrop, and takes focus on open
  * so a keyboard user is not left behind on the canvas.
  */
-export function Panel({ id, onClose }: { id: string | null; onClose: () => void }) {
+export function Panel({
+  id,
+  onClose,
+  scrollToProjectId,
+  onScrolledToProject,
+}: {
+  id: string | null
+  onClose: () => void
+  scrollToProjectId?: string | null
+  onScrolledToProject?: () => void
+}) {
   const d = districtById(id ?? '')
   const ref = useRef<HTMLDivElement>(null)
 
@@ -44,6 +54,17 @@ export function Panel({ id, onClose }: { id: string | null; onClose: () => void 
     ref.current?.focus()
     return () => window.removeEventListener('keydown', onKey)
   }, [id, onClose])
+
+  useEffect(() => {
+    if (!id || !scrollToProjectId) return
+    const el = document.getElementById(`dossier-${scrollToProjectId}`)
+    if (el) {
+      el.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      el.classList.add('dossier-highlight')
+      window.setTimeout(() => el.classList.remove('dossier-highlight'), 1600)
+    }
+    onScrolledToProject?.()
+  }, [id, scrollToProjectId, onScrolledToProject])
 
   if (!d) return null
 
@@ -156,7 +177,7 @@ function Gallery({ id }: { id: string }) {
 
 function Dossier({ p, n }: { p: Project; n: number }) {
   return (
-    <article className="plate p-4">
+    <article id={`dossier-${p.id}`} className="plate p-4">
       <div className="flex items-start justify-between gap-3">
         <h3 className="stencil text-[12px] leading-snug text-[color:var(--color-hud)]">
           <span className="mr-2 font-[family-name:var(--font-mono)] text-[10px] text-[color:var(--color-hud-dim)] tnum">

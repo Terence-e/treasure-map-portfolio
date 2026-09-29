@@ -211,6 +211,16 @@ html.daylight .plate {
 /* The canvas must never intercept text selection on the overlays. */
 canvas { touch-action: none; display: block; }
 
+/* Briefly outlines a dossier jumped to from the project list. */
+.dossier-highlight {
+  animation: dossier-flash 1600ms var(--ease-snap) both;
+}
+@keyframes dossier-flash {
+  0%   { box-shadow: 0 0 0 2px var(--color-amber); }
+  80%  { box-shadow: 0 0 0 2px var(--color-amber); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
 /* ------------------------------------------------------------
    FOCUS + MOTION
    ------------------------------------------------------------ */
